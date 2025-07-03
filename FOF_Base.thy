@@ -1,5 +1,4 @@
-(*TODO: change theory name*)
-theory Syntax
+theory FOF_Base
   imports Main
 begin
 
