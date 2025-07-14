@@ -18,7 +18,7 @@ Pred 'p "('v, 'f) fof_term list" |
 And "('v, 'f, 'p) formula" "('v, 'f, 'p) formula" |
 Or "('v, 'f, 'p) formula" "('v, 'f, 'p) formula" |
 Not "('v, 'f, 'p) formula" |
-Equal "('v, 'f, 'p) formula" "('v, 'f, 'p) formula" |
+Equal "('v, 'f) fof_term" "('v, 'f) fof_term" |
 Forall 'v "('v, 'f, 'p) formula" |
 Exists 'v "('v, 'f, 'p) formula" |
 T | 
@@ -32,7 +32,7 @@ fun eval_formula ::
 "eval_formula (And f1 f2) vI fI pI = ((eval_formula f1 vI fI pI) \<and> (eval_formula f2 vI fI pI))" |
 "eval_formula (Or f1 f2) vI fI pI = ((eval_formula f1 vI fI pI) \<or> (eval_formula f2 vI fI pI))" |
 "eval_formula (Not f) vI fI pI = (\<not>(eval_formula f vI fI pI))" |
-"eval_formula (Equal f1 f2) vI fI pI = ((eval_formula f1 vI fI pI) = (eval_formula f2 vI fI pI))" |
+"eval_formula (Equal f1 f2) vI fI pI = ((eval_term f1 vI fI) = (eval_term f2 vI fI))" |
 "eval_formula (Forall v f) vI fI pI = (\<forall>x. eval_formula f (vI(v := x)) fI pI)" |
 "eval_formula (Exists v f) vI fI pI = (\<exists>x. eval_formula f (vI(v := x)) fI pI)" |
 "eval_formula T _ _ _ = True" |
@@ -85,7 +85,7 @@ fun simp_formula :: "('v, 'f, 'p) formula \<Rightarrow> ('v, 'f, 'p) formula" wh
   F \<Rightarrow> T |
   f' \<Rightarrow> Not f'
 )" |
-"simp_formula (Equal f1 f2) = Equal (simp_formula f1) (simp_formula f2)" |
+"simp_formula (Equal f1 f2) = Equal f1 f2" |
 "simp_formula (Forall v f) = Forall v (simp_formula f)" |
 "simp_formula (Exists v f) = Exists v (simp_formula f)"
 
