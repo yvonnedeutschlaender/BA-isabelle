@@ -32,7 +32,7 @@ fun eval_formula ::
 "eval_formula (And f1 f2) vI fI pI = ((eval_formula f1 vI fI pI) \<and> (eval_formula f2 vI fI pI))" |
 "eval_formula (Or f1 f2) vI fI pI = ((eval_formula f1 vI fI pI) \<or> (eval_formula f2 vI fI pI))" |
 "eval_formula (Not f) vI fI pI = (\<not>(eval_formula f vI fI pI))" |
-"eval_formula (Equal f1 f2) vI fI pI = ((eval_term f1 vI fI) = (eval_term f2 vI fI))" |
+"eval_formula (Equal t1 t2) vI fI pI = ((eval_term t1 vI fI) = (eval_term t2 vI fI))" |
 "eval_formula (Forall v f) vI fI pI = (\<forall>x. eval_formula f (vI(v := x)) fI pI)" |
 "eval_formula (Exists v f) vI fI pI = (\<exists>x. eval_formula f (vI(v := x)) fI pI)" |
 "eval_formula T _ _ _ = True" |
@@ -51,9 +51,6 @@ definition Xor :: "('v, 'f, 'p) formula \<Rightarrow> ('v, 'f, 'p) formula \<Rig
 lemma excluded_middle: "eval_formula (Or f (Not f)) vI fI pI"
   by auto
 
-lemma not_not [simp]: "eval_formula (Not (Not f)) vI fI pI = eval_formula f vI fI pI"
-  by auto
-
 lemma and_de_morgan: "eval_formula (Not (And f1 f2)) vI fI pI = eval_formula (Or (Not f1) (Not f2)) vI fI pI"
   by auto
 
@@ -61,8 +58,6 @@ lemma or_de_morgan: "eval_formula (Not (Or f1 f2)) vI fI pI = eval_formula (And 
   by auto
 
 fun simp_formula :: "('v, 'f, 'p) formula \<Rightarrow> ('v, 'f, 'p) formula" where
-"simp_formula T = T" |
-"simp_formula F = F" |
 "simp_formula (Pred p args) = Pred p args" |
 "simp_formula (And f1 f2) = (case (simp_formula f1, simp_formula f2) of
   (T, T) \<Rightarrow> T |
@@ -85,8 +80,10 @@ fun simp_formula :: "('v, 'f, 'p) formula \<Rightarrow> ('v, 'f, 'p) formula" wh
   F \<Rightarrow> T |
   f' \<Rightarrow> Not f'
 )" |
-"simp_formula (Equal f1 f2) = Equal f1 f2" |
+"simp_formula (Equal t1 t2) = Equal t1 t2" |
 "simp_formula (Forall v f) = Forall v (simp_formula f)" |
-"simp_formula (Exists v f) = Exists v (simp_formula f)"
+"simp_formula (Exists v f) = Exists v (simp_formula f)" |
+"simp_formula T = T" |
+"simp_formula F = F"
 
 end                                          
