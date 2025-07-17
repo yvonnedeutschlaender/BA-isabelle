@@ -5,6 +5,339 @@ begin
 lemma eval_formula_Not_Not: "eval_formula (Not (Not f)) vI fI pI = eval_formula f vI fI pI"
   by simp
 
+lemma eval_formula_simp_formula_And_equiv:
+  assumes IH1: "eval_formula (simp_formula \<phi>1) vI fI pI = eval_formula \<phi>1 vI fI pI" 
+      and IH2: "eval_formula (simp_formula \<phi>2) vI fI pI = eval_formula \<phi>2 vI fI pI"
+    shows "eval_formula (simp_formula (And \<phi>1 \<phi>2)) vI fI pI = eval_formula (And \<phi>1 \<phi>2) vI fI pI"
+proof (cases "simp_formula \<phi>1")
+  case (Pred p1 args1)
+  then show ?thesis
+  proof (cases "simp_formula \<phi>2")
+    case (Pred p2 args2)
+    have "eval_formula (simp_formula (And \<phi>1 \<phi>2)) vI fI pI = eval_formula (And (Pred p1 args1) (Pred p2 args2)) vI fI pI"
+      using `simp_formula \<phi>1 = (Pred p1 args1)` `simp_formula \<phi>2 = (Pred p2 args2)`
+      by simp
+    also have "... = ((eval_formula (Pred p1 args1) vI fI pI) \<and> (eval_formula (Pred p2 args2) vI fI pI))"
+      by simp
+    also have "... = eval_formula (And \<phi>1 \<phi>2) vI fI pI"
+      using `simp_formula \<phi>1 = (Pred p1 args1)` `simp_formula \<phi>2 = (Pred p2 args2)` IH1 IH2
+      by simp
+    finally show ?thesis .
+  next
+    case (And f1 f2)
+    then show ?thesis using `simp_formula \<phi>1 = Pred p1 args1` IH1 IH2 by simp
+  next
+    case (Or f1 f2)
+    then show ?thesis using `simp_formula \<phi>1 = Pred p1 args1` IH1 IH2 by simp
+  next
+    case (Not f)
+    then show ?thesis using `simp_formula \<phi>1 = Pred p1 args1` IH1 IH2 by simp
+  next
+    case (Equal t1 t1)
+    then show ?thesis using `simp_formula \<phi>1 = Pred p1 args1` IH1 IH2 by simp
+  next
+    case (Forall v f)
+    then show ?thesis using `simp_formula \<phi>1 = Pred p1 args1` IH1 IH2 by simp
+  next
+    case (Exists v f)
+    then show ?thesis using `simp_formula \<phi>1 = Pred p1 args1` IH1 IH2 by simp
+  next
+    case T
+    have "eval_formula (simp_formula (And \<phi>1 \<phi>2)) vI fI pI = eval_formula (Pred p1 args1) vI fI pI"
+      using `simp_formula \<phi>1 = (Pred p1 args1)` `simp_formula \<phi>2 = T` 
+      by simp
+    also have "... = ((eval_formula (Pred p1 args1) vI fI pI) \<and> (eval_formula T vI fI pI))"
+      by simp
+    also have "... = eval_formula (And \<phi>1 \<phi>2) vI fI pI"
+      using `simp_formula \<phi>1 = (Pred p1 args1)` `simp_formula \<phi>2 = T` IH1 IH2
+      by simp
+    finally show ?thesis .
+  next
+    case F
+    have "eval_formula (simp_formula (And \<phi>1 \<phi>2)) vI fI pI = False"
+      using `simp_formula \<phi>1 = (Pred p1 args1)` `simp_formula \<phi>2 = F`
+      by simp
+    also have "... = ((eval_formula (Pred p1 args1) vI fI pI) \<and> (eval_formula F vI fI pI))"
+      by simp
+    also have "... = eval_formula (And \<phi>1 \<phi>2) vI fI pI"
+      using `simp_formula \<phi>2 = F` IH2
+      by simp
+    finally show ?thesis .
+  qed
+next
+  case (And f1 f2)
+  then show ?thesis
+  proof (cases "simp_formula \<phi>2")
+    case (Pred p args)
+    then show ?thesis using `simp_formula \<phi>1 = And f1 f2` IH1 IH2 by simp
+  next
+    case (And f3 f4)
+    then show ?thesis using `simp_formula \<phi>1 = And f1 f2` IH1 IH2 by simp
+  next
+    case (Or f3 f4)
+    then show ?thesis using `simp_formula \<phi>1 = And f1 f2` IH1 IH2 by simp
+  next
+    case (Not f)
+    then show ?thesis using `simp_formula \<phi>1 = And f1 f2` IH1 IH2 by simp
+  next
+    case (Equal t1 t1)
+    then show ?thesis using `simp_formula \<phi>1 = And f1 f2` IH1 IH2 by simp
+  next
+    case (Forall v f)
+    then show ?thesis using `simp_formula \<phi>1 = And f1 f2` IH1 IH2 by simp
+  next
+    case (Exists v f)
+    then show ?thesis using `simp_formula \<phi>1 = And f1 f2` IH1 IH2 by simp
+  next
+    case T
+    then show ?thesis using `simp_formula \<phi>1 = And f1 f2` IH1 IH2 by simp
+  next
+    case F
+    then show ?thesis using `simp_formula \<phi>1 = And f1 f2` IH2 by simp
+  qed
+next
+  case (Or f1 f2)
+  then show ?thesis
+  proof (cases "simp_formula \<phi>2")
+    case (Pred p args)
+    then show ?thesis using `simp_formula \<phi>1 = Or f1 f2` IH1 IH2 by simp
+  next
+    case (And f3 f4)
+    then show ?thesis using `simp_formula \<phi>1 = Or f1 f2` IH1 IH2 by simp
+  next
+    case (Or f3 f4)
+    then show ?thesis using `simp_formula \<phi>1 = Or f1 f2` IH1 IH2 by simp
+  next
+    case (Not f)
+    then show ?thesis using `simp_formula \<phi>1 = Or f1 f2` IH1 IH2 by simp
+  next
+    case (Equal t1 t1)
+    then show ?thesis using `simp_formula \<phi>1 = Or f1 f2` IH1 IH2 by simp
+  next
+    case (Forall v f)
+    then show ?thesis using `simp_formula \<phi>1 = Or f1 f2` IH1 IH2 by simp
+  next
+    case (Exists v f)
+    then show ?thesis using `simp_formula \<phi>1 = Or f1 f2` IH1 IH2 by simp
+  next
+    case T
+    then show ?thesis using `simp_formula \<phi>1 = Or f1 f2` IH1 IH2 by simp
+  next
+    case F
+    then show ?thesis using `simp_formula \<phi>1 = Or f1 f2` IH2 by simp
+  qed
+next
+  case (Not f1)
+  then show ?thesis
+  proof (cases "simp_formula \<phi>2")
+    case (Pred p args)
+    then show ?thesis using `simp_formula \<phi>1 = Not f1` IH1 IH2 by simp
+  next
+    case (And f2 f3)
+    then show ?thesis using `simp_formula \<phi>1 = Not f1` IH1 IH2 by simp
+  next
+    case (Or f2 f3)
+    then show ?thesis using `simp_formula \<phi>1 = Not f1` IH1 IH2 by simp
+  next
+    case (Not f2)
+    then show ?thesis using `simp_formula \<phi>1 = Not f1` IH1 IH2 by simp
+  next
+    case (Equal t1 t2)
+    then show ?thesis using `simp_formula \<phi>1 = Not f1` IH1 IH2 by simp
+  next
+    case (Forall v f)
+    then show ?thesis using `simp_formula \<phi>1 = Not f1` IH1 IH2 by simp
+  next
+    case (Exists v f)
+    then show ?thesis using `simp_formula \<phi>1 = Not f1` IH1 IH2 by simp
+  next
+    case T
+    then show ?thesis using `simp_formula \<phi>1 = Not f1` IH1 IH2 by simp
+  next
+    case F
+    then show ?thesis using `simp_formula \<phi>1 = Not f1` IH2 by simp
+  qed
+next
+  case (Equal t1 t2)
+  then show ?thesis
+  proof (cases "simp_formula \<phi>2")
+    case (Pred p args)
+    then show ?thesis using `simp_formula \<phi>1 = Equal t1 t2` IH1 IH2 by simp
+  next
+    case (And f1 f2)
+    then show ?thesis using `simp_formula \<phi>1 = Equal t1 t2` IH1 IH2 by simp
+  next
+    case (Or f1 f2)
+    then show ?thesis using `simp_formula \<phi>1 = Equal t1 t2` IH1 IH2 by simp
+  next
+    case (Not f)
+    then show ?thesis using `simp_formula \<phi>1 = Equal t1 t2` IH1 IH2 by simp
+  next
+    case (Equal t3 t4)
+    then show ?thesis using `simp_formula \<phi>1 = Equal t1 t2` IH1 IH2 by simp
+  next
+    case (Forall v f)
+    then show ?thesis using `simp_formula \<phi>1 = Equal t1 t2` IH1 IH2 by simp
+  next
+    case (Exists v f)
+    then show ?thesis using `simp_formula \<phi>1 = Equal t1 t2` IH1 IH2 by simp
+  next
+    case T
+    then show ?thesis using `simp_formula \<phi>1 = Equal t1 t2` IH1 IH2 by simp
+  next
+    case F
+    then show ?thesis using `simp_formula \<phi>1 = Equal t1 t2` IH2 by simp
+  qed
+next
+  case (Forall v1 f1)
+  then show ?thesis
+  proof (cases "simp_formula \<phi>2")
+    case (Pred p args)
+    then show ?thesis using `simp_formula \<phi>1 = Forall v1 f1` IH1 IH2 by simp
+  next
+    case (And f2 f3)
+    then show ?thesis using `simp_formula \<phi>1 = Forall v1 f1` IH1 IH2 by simp
+  next
+    case (Or f2 f3)
+    then show ?thesis using `simp_formula \<phi>1 = Forall v1 f1` IH1 IH2 by simp
+  next
+    case (Not f2)
+    then show ?thesis using `simp_formula \<phi>1 = Forall v1 f1` IH1 IH2 by simp
+  next
+    case (Equal t1 t2)
+    then show ?thesis using `simp_formula \<phi>1 = Forall v1 f1` IH1 IH2 by simp
+  next
+    case (Forall v2 f2)
+    then show ?thesis using `simp_formula \<phi>1 = Forall v1 f1` IH1 IH2 by simp
+  next
+    case (Exists v2 f2)
+    then show ?thesis using `simp_formula \<phi>1 = Forall v1 f1` IH1 IH2 by simp
+  next
+    case T
+    then show ?thesis using `simp_formula \<phi>1 = Forall v1 f1` IH1 IH2 by simp
+  next
+    case F
+    then show ?thesis using `simp_formula \<phi>1 = Forall v1 f1` IH2 by simp
+  qed
+next
+  case (Exists v1 f1)
+  then show ?thesis
+  proof (cases "simp_formula \<phi>2")
+    case (Pred p args)
+    then show ?thesis using `simp_formula \<phi>1 = Exists v1 f1` IH1 IH2 by simp
+  next
+    case (And f2 f3)
+    then show ?thesis using `simp_formula \<phi>1 = Exists v1 f1` IH1 IH2 by simp
+  next
+    case (Or f2 f3)
+    then show ?thesis using `simp_formula \<phi>1 = Exists v1 f1` IH1 IH2 by simp
+  next
+    case (Not f2)
+    then show ?thesis using `simp_formula \<phi>1 = Exists v1 f1` IH1 IH2 by simp
+  next
+    case (Equal t1 t2)
+    then show ?thesis using `simp_formula \<phi>1 = Exists v1 f1` IH1 IH2 by simp
+  next
+    case (Forall v2 f2)
+    then show ?thesis using `simp_formula \<phi>1 = Exists v1 f1` IH1 IH2 by simp
+  next
+    case (Exists v2 f2)
+    then show ?thesis using `simp_formula \<phi>1 = Exists v1 f1` IH1 IH2 by simp
+  next
+    case T
+    then show ?thesis using `simp_formula \<phi>1 = Exists v1 f1` IH1 IH2 by simp
+  next
+    case F
+    then show ?thesis using `simp_formula \<phi>1 = Exists v1 f1` IH2 by simp
+  qed
+next
+  case T
+  then show ?thesis
+  proof (cases "simp_formula \<phi>2")
+    case (Pred p args)
+    have "eval_formula (simp_formula (And \<phi>1 \<phi>2)) vI fI pI = eval_formula (Pred p args) vI fI pI"
+      using `simp_formula \<phi>1 = T` `simp_formula \<phi>2 = (Pred p args)` 
+      by simp
+    also have "... = ((eval_formula T vI fI pI) \<and> (eval_formula (Pred p args) vI fI pI))"
+      by simp
+    also have "... = eval_formula (And \<phi>1 \<phi>2) vI fI pI"
+      using `simp_formula \<phi>1 = T` `simp_formula \<phi>2 = (Pred p args)` IH1 IH2
+      by simp
+    finally show ?thesis .
+  next
+    case (And f1 f2)
+    then show ?thesis using `simp_formula \<phi>1 = T` IH1 IH2 by simp
+  next
+    case (Or f1 f2)
+    then show ?thesis using `simp_formula \<phi>1 = T` IH1 IH2 by simp
+  next
+    case (Not f)
+    then show ?thesis using `simp_formula \<phi>1 = T` IH1 IH2 by simp
+  next
+    case (Equal t1 t2)
+    then show ?thesis using `simp_formula \<phi>1 = T` IH1 IH2 by simp
+  next
+    case (Forall v f)
+    then show ?thesis using `simp_formula \<phi>1 = T` IH1 IH2 by simp
+  next
+    case (Exists v f)
+    then show ?thesis using `simp_formula \<phi>1 = T` IH1 IH2 by simp
+  next
+    case T
+    have "eval_formula (simp_formula (And \<phi>1 \<phi>2)) vI fI pI = True"
+      using `simp_formula \<phi>1 = T` `simp_formula \<phi>2 = T`
+      by simp
+    also have "... = ((eval_formula T vI fI pI) \<and> (eval_formula T vI fI pI))"
+      by simp
+    also have "... = eval_formula (And \<phi>1 \<phi>2) vI fI pI"
+      using `simp_formula \<phi>1 = T` `simp_formula \<phi>2 = T` IH1 IH2
+      by simp
+    finally show ?thesis .
+  next
+    case F
+    then show ?thesis using `simp_formula \<phi>1 = T` IH2 by simp
+  qed
+next
+  case F
+  then show ?thesis
+  proof (cases "simp_formula \<phi>2")
+    case (Pred p args)
+    have "eval_formula (simp_formula (And \<phi>1 \<phi>2)) vI fI pI = False"
+      using `simp_formula \<phi>1 = F` `simp_formula \<phi>2 = (Pred p args)` 
+      by simp
+    also have "... = ((eval_formula F vI fI pI) \<and> (eval_formula (Pred p args) vI fI pI))"
+      by simp
+    also have "... = eval_formula (And \<phi>1 \<phi>2) vI fI pI"
+      using `simp_formula \<phi>1 = F` `simp_formula \<phi>2 = (Pred p args)` IH1 IH2
+      by simp
+    finally show ?thesis .
+  next
+    case (And f1 f2)
+    then show ?thesis using `simp_formula \<phi>1 = F` IH1 by simp
+  next
+    case (Or f1 f2)
+    then show ?thesis using `simp_formula \<phi>1 = F` IH1 by simp
+  next
+    case (Not f)
+    then show ?thesis using `simp_formula \<phi>1 = F` IH1 by simp
+  next
+    case (Equal t1 t2)
+    then show ?thesis using `simp_formula \<phi>1 = F` IH1 by simp
+  next
+    case (Forall v f)
+    then show ?thesis using `simp_formula \<phi>1 = F` IH1 by simp
+  next
+    case (Exists v f)
+    then show ?thesis using `simp_formula \<phi>1 = F` IH1 by simp
+  next
+    case T
+    then show ?thesis using `simp_formula \<phi>1 = F` IH1 by simp
+  next
+    case F
+    then show ?thesis using `simp_formula \<phi>1 = F` IH1 by simp
+  qed
+qed
+
 lemma eval_formula_simp_formula_Or_equiv:
   assumes IH1: "eval_formula (simp_formula \<phi>1) vI fI pI = eval_formula \<phi>1 vI fI pI" 
       and IH2: "eval_formula (simp_formula \<phi>2) vI fI pI = eval_formula \<phi>2 vI fI pI"
@@ -464,7 +797,7 @@ proof (induction \<phi> rule: simp_formula.induct)
   then show ?case by simp
 next
   case (2 f1 f2)
-  then show ?case sorry
+  then show ?case by (rule eval_formula_simp_formula_And_equiv)
 next
   case (3 f1 f2)
   then show ?case by (rule eval_formula_simp_formula_Or_equiv)
