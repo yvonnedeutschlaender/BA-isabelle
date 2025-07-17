@@ -31,9 +31,6 @@ fun simp_formula :: "('v, 'f, 'p) formula \<Rightarrow> ('v, 'f, 'p) formula" wh
 "simp_formula T = T" |
 "simp_formula F = F"
 
-lemma eval_formula_Not_Not: "eval_formula (Not (Not f)) vI fI pI = eval_formula f vI fI pI"
-  by simp
-
 lemma eval_formula_simp_formula_And_equiv:
   assumes IH1: "eval_formula (simp_formula \<phi>1) vI fI pI = eval_formula \<phi>1 vI fI pI" 
       and IH2: "eval_formula (simp_formula \<phi>2) vI fI pI = eval_formula \<phi>2 vI fI pI"
@@ -706,115 +703,62 @@ lemma eval_formula_simp_formula_Not_equiv:
 proof (cases "simp_formula \<phi>")
   case (Pred p args)
   have "eval_formula (simp_formula (Not \<phi>)) vI fI pI = eval_formula (Not (Pred p args)) vI fI pI"
-    using simp_formula.simps `simp_formula \<phi> = (Pred p args)`
+    using `simp_formula \<phi> = (Pred p args)`
     by simp
   also have "... = (\<not>(eval_formula (Pred p args) vI fI pI))"
-    using eval_formula.simps
-    by simp
-  also have "... = (\<not>(eval_formula \<phi>) vI fI pI)"
-    using `simp_formula \<phi> = (Pred p args)` IH
     by simp
   also have "... = eval_formula (Not \<phi>) vI fI pI"
-    using eval_formula.simps
+    using `simp_formula \<phi> = (Pred p args)` IH
     by simp
   finally show ?thesis .
 next
   case (And f1 f2)
-  have "eval_formula (simp_formula (Not \<phi>)) vI fI pI = eval_formula (Not (And f1 f2)) vI fI pI"
-    using simp_formula.simps `simp_formula \<phi> = (And f1 f2)` 
-    by simp
-  also have "... = (\<not>(eval_formula (And f1 f2) vI fI pI))"
-    using eval_formula.simps
-    by simp
-  also have "... = eval_formula (Not \<phi>) vI fI pI"
-    using `simp_formula \<phi> = (And f1 f2)` IH eval_formula.simps
-    by simp
-  finally show ?thesis .
+  then show ?thesis using IH by simp
 next
   case (Or f1 f2)
-  have "eval_formula (simp_formula (Not \<phi>)) vI fI pI = eval_formula (Not (Or f1 f2)) vI fI pI"
-    using simp_formula.simps `simp_formula \<phi> = (Or f1 f2)` 
-    by simp
-  also have "... = (\<not>(eval_formula (Or f1 f2) vI fI pI))"
-    using eval_formula.simps
-    by simp
-  also have "... = eval_formula (Not \<phi>) vI fI pI"
-    using `simp_formula \<phi> = (Or f1 f2)` IH eval_formula.simps
-    by simp
-  finally show ?thesis .  
+  then show ?thesis using IH by simp
 next
   case (Not f)
   have "eval_formula (simp_formula (Not \<phi>)) vI fI pI = eval_formula f vI fI pI"
-    using simp_formula.simps `simp_formula \<phi> = (Not f)` eval_formula_Not_Not
+    using `simp_formula \<phi> = (Not f)`
     by simp
   also have "... = (\<not>(\<not>(eval_formula f vI fI pI)))"
-    using eval_formula_Not_Not
     by simp
-  also have "... = (\<not>(eval_formula \<phi> vI fI pI))"
-    using eval_formula.simps `simp_formula \<phi> = (Not f)` IH
+  also have "... = (\<not>(eval_formula (Not f) vI fI pI))"
     by simp
   also have "... = eval_formula (Not \<phi>) vI fI pI"
-    using eval_formula.simps
+    using `simp_formula \<phi> = (Not f)` IH
     by simp 
   finally show ?thesis .
 next
   case (Equal t1 t2)
-  have "eval_formula (simp_formula (Not \<phi>)) vI fI pI = eval_formula (Not (Equal t1 t2)) vI fI pI"
-    using simp_formula.simps `simp_formula \<phi> = (Equal t1 t2)`
-    by simp
-  also have "... = (\<not>(eval_formula (Equal t1 t2) vI fI pI))"
-    using eval_formula.simps
-    by simp
-  also have "... = eval_formula (Not \<phi>) vI fI pI"
-    using `simp_formula \<phi> = (Equal t1 t2)` IH eval_formula.simps
-    by simp
-  finally show ?thesis .
+  then show ?thesis using IH by simp
 next
   case (Forall v f)
-  have "eval_formula (simp_formula (Not \<phi>)) vI fI pI = eval_formula (Not (Forall v f)) vI fI pI"
-    using simp_formula.simps `simp_formula \<phi> = (Forall v f)`
-    by simp
-  also have "... = (\<not>(eval_formula (Forall v f) vI fI pI))"
-    using eval_formula.simps
-    by simp
-  also have "... = eval_formula (Not \<phi>) vI fI pI"
-    using `simp_formula \<phi> = (Forall v f)` IH eval_formula.simps
-    by simp
-  finally show ?thesis .
+  then show ?thesis using IH by simp
 next
   case (Exists v f)
-  have "eval_formula (simp_formula (Not \<phi>)) vI fI pI = eval_formula (Not (Exists v f)) vI fI pI"
-    using simp_formula.simps `simp_formula \<phi> = (Exists v f)`
-    by simp
-  also have "... = (\<not>(eval_formula (Exists v f) vI fI pI))"
-    using eval_formula.simps
-    by simp
-  also have "... = eval_formula (Not \<phi>) vI fI pI"
-    using `simp_formula \<phi> = (Exists v f)` IH eval_formula.simps
-    by simp
-  finally show ?thesis .
+  then show ?thesis using IH by simp
 next
   case T
   have "eval_formula (simp_formula (Not \<phi>)) vI fI pI = False"
-    using simp_formula.simps `simp_formula \<phi> = T` eval_formula.simps
+    using `simp_formula \<phi> = T`
     by simp
   also have "... = (\<not>(eval_formula T vI fI pI))"
-    using eval_formula.simps
     by simp
   also have "... = eval_formula (Not \<phi>) vI fI pI"
-    using `simp_formula \<phi> = T` IH eval_formula.simps
+    using `simp_formula \<phi> = T` IH
     by simp
   finally show ?thesis .
 next
   case F
   have "eval_formula (simp_formula (Not \<phi>)) vI fI pI = True"
-    using simp_formula.simps `simp_formula \<phi> = F` eval_formula.simps
+    using `simp_formula \<phi> = F`
     by simp
   also have "... = (\<not>(eval_formula F vI fI pI))"
-    using eval_formula.simps
     by simp
   also have "... = eval_formula (Not \<phi>) vI fI pI"
-    using `simp_formula \<phi> = F` IH eval_formula.simps
+    using `simp_formula \<phi> = F` IH
     by simp  
   finally show ?thesis .
 qed
