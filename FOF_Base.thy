@@ -57,33 +57,4 @@ lemma and_de_morgan: "eval_formula (Not (And f1 f2)) vI fI pI = eval_formula (Or
 lemma or_de_morgan: "eval_formula (Not (Or f1 f2)) vI fI pI = eval_formula (And (Not f1) (Not f2)) vI fI pI"
   by auto
 
-fun simp_formula :: "('v, 'f, 'p) formula \<Rightarrow> ('v, 'f, 'p) formula" where
-"simp_formula (Pred p args) = Pred p args" |
-"simp_formula (And f1 f2) = (case (simp_formula f1, simp_formula f2) of
-  (T, T) \<Rightarrow> T |
-  (F, _) \<Rightarrow> F |
-  (_, F) \<Rightarrow> F |
-  (T, f2') \<Rightarrow> f2' |
-  (f1', T) \<Rightarrow> f1' |
-  (f1', f2') \<Rightarrow> And f1' f2'
-)" |
-"simp_formula (Or f1 f2) = (case (simp_formula f1, simp_formula f2) of
-  (F, F) \<Rightarrow> F |
-  (T, _) \<Rightarrow> T |
-  (_, T) \<Rightarrow> T |
-  (F, f2') \<Rightarrow> f2' |
-  (f1', F) \<Rightarrow> f1' |
-  (f1', f2') \<Rightarrow> Or f1' f2'
-)" |
-"simp_formula (Not f) = (case simp_formula f of
-  T \<Rightarrow> F |
-  F \<Rightarrow> T |
-  f' \<Rightarrow> Not f'
-)" |
-"simp_formula (Equal t1 t2) = Equal t1 t2" |
-"simp_formula (Forall v f) = Forall v (simp_formula f)" |
-"simp_formula (Exists v f) = Exists v (simp_formula f)" |
-"simp_formula T = T" |
-"simp_formula F = F"
-
 end                                          
