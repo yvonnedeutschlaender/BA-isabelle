@@ -763,9 +763,8 @@ next
   finally show ?thesis .
 qed
 
-(*
 theorem eval_formula_simp_formula_equiv_eval_formula: "eval_formula (simp_formula \<phi>) vI fI pI = eval_formula \<phi> vI fI pI"
-proof (induction \<phi> rule: simp_formula.induct)
+proof (induction \<phi> arbitrary: vI rule: simp_formula.induct)
   case (1 p args)
   then show ?case by simp
 next
@@ -782,10 +781,10 @@ next
   then show ?case by simp
 next
   case (6 v f)
-  then show ?case sorry
+  then show ?case by fastforce
 next
   case (7 v f)
-  then show ?case sorry
+  then show ?case by fastforce
 next
   case 8
   then show ?case by simp
@@ -793,6 +792,5 @@ next
   case 9
   then show ?case by simp
 qed
-*)
 
 end
