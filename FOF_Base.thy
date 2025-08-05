@@ -47,6 +47,40 @@ definition Equiv :: "('v, 'f, 'p) formula \<Rightarrow> ('v, 'f, 'p) formula \<R
 definition Xor :: "('v, 'f, 'p) formula \<Rightarrow> ('v, 'f, 'p) formula \<Rightarrow> ('v, 'f, 'p) formula" where
 "Xor f1 f2 = Or (And (Not f1) f2) (And f1 (Not f2))"
 
+fun distribute_formula :: "('v, 'f, 'p) formula \<Rightarrow> ('v, 'f, 'p) formula" where
+"distribute_formula (Pred p args) = Pred p args" |
+"distribute_formula (And \<phi> \<psi>) = (case (distribute_formula \<phi>, distribute_formula \<psi>) of
+  (Or \<phi>1 \<phi>2, \<psi>') \<Rightarrow> Or (And \<phi>1 \<psi>') (And \<phi>2 \<psi>') |
+  (\<phi>', Or \<psi>1 \<psi>2) \<Rightarrow> Or (And \<phi>' \<psi>1) (And \<phi>' \<psi>2) |
+  (\<phi>', \<psi>') \<Rightarrow> And \<phi>' \<psi>'
+)" |
+"distribute_formula (Or \<phi> \<psi>) = (case (distribute_formula \<phi>, distribute_formula \<psi>) of
+  (And \<phi>1 \<phi>2, \<psi>') \<Rightarrow> And (Or \<phi>1 \<psi>') (Or \<phi>2 \<psi>') |
+  (\<phi>', And \<psi>1 \<psi>2) \<Rightarrow> And (Or \<phi>' \<psi>1) (Or \<phi>' \<psi>2) |
+  (\<phi>', \<psi>') \<Rightarrow> Or \<phi>' \<psi>'
+)" |
+"distribute_formula (Not \<phi>) = Not (distribute_formula \<phi>)" |
+"distribute_formula (Equal t1 t2) = Equal t1 t2" |
+"distribute_formula (Forall v \<phi>) = Forall v (distribute_formula \<phi>)" |
+"distribute_formula (Exists v \<phi>) = Exists v (distribute_formula \<phi>)" |
+"distribute_formula T = T" |
+"distribute_formula F = F"
+
+fun demorg_formula :: "('v, 'f, 'p) formula \<Rightarrow> ('v, 'f, 'p) formula" where
+"demorg_formula (Pred p args) = Pred p args" |
+"demorg_formula (And \<phi> \<psi>) = And (demorg_formula \<phi>) (demorg_formula \<psi>)" |
+"demorg_formula (Or \<phi> \<psi>) = Or (demorg_formula \<phi>) (demorg_formula \<psi>)" |
+"demorg_formula (Not \<phi>) = (case demorg_formula \<phi> of
+  (And \<psi>1 \<psi>2) \<Rightarrow> Or (Not \<psi>1) (Not \<psi>2) |
+  (Or \<psi>1 \<psi>2) \<Rightarrow> And (Not \<psi>1) (Not \<psi>2) |
+  \<phi>' \<Rightarrow> Not \<phi>'
+)" |
+"demorg_formula (Equal t1 t2) = Equal t1 t2" |
+"demorg_formula (Forall v \<phi>) = Forall v (demorg_formula \<phi>)" |
+"demorg_formula (Exists v \<phi>) = Exists v (demorg_formula \<phi>)" |
+"demorg_formula T = T" |
+"demorg_formula F = F"
+
 (*TODO: erweitern *)
 lemma excluded_middle: "eval_formula (Or f (Not f)) vI fI pI"
   by auto
