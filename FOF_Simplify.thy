@@ -759,7 +759,7 @@ next
     by simp
   also have "... = eval_formula (Not \<phi>) vI fI pI"
     using `simp_formula \<phi> = F` IH
-    by simp  
+    by simp
   finally show ?thesis .
 qed
 
